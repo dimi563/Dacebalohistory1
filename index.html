@@ -1,5 +1,5 @@
-cat > /home/claude/index.html << 'HTMLEOF'
-<!DOCTYPE html>
+
+<!DOCTYPE html>--
 <html lang="ro">
 <head>
 <meta charset="UTF-8">
@@ -616,30 +616,38 @@ document.getElementById('lightbox').addEventListener('wheel',e=>{
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeLightbox()});
 
 // ── Secret combo ─────────────────────────────────────────────
-let combo=[],comboT=null;
-document.addEventListener('keydown',e=>{
-  if(!SECRET.includes(e.key)){
-    if(document.activeElement.tagName==='INPUT'||document.activeElement.contentEditable==='true')return;
-    combo=[];document.getElementById('adm-unlock').classList.remove('visible');return;
-  }
-  if(document.activeElement.tagName==='INPUT'||document.activeElement.contentEditable==='true')return;
-  e.preventDefault();
-  if(combo.length===0)document.getElementById('adm-unlock').classList.add('visible');
-  if(e.key===SECRET[combo.length]){
+// ... codul tău anterior din evenimentul keydown ...
+
+let combo = [], comboT = null; // Fix pentru eroarea comboT
+
+document.addEventListener('keydown', e => {
+  // Verifică dacă utilizatorul scrie în inputuri
+  if(['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName) || document.activeElement.contentEditable === 'true') return;
+
+  if(e.key === SECRET[combo.length]){
     combo.push(e.key);
-    document.querySelectorAll('.ul-key').forEach((k,i)=>k.classList.toggle('done',i<combo.length));
-    clearTimeout(comboT);
-    if(combo.length===SECRET.length){
-      setTimeout(()=>{
+    document.querySelectorAll('.ul-key').forEach((k,i) => k.classList.toggle('done', i < combo.length));
+    
+    clearTimeout(comboT); // Acum funcționează corect deoarece comboT e declarat sus
+    
+    if(combo.length === SECRET.length){
+      setTimeout(() => {
         document.getElementById('adm-unlock').classList.remove('visible');
-        combo=[];document.querySelectorAll('.ul-key').forEach(k=>k.classList.remove('done'));
+        combo = [];
+        document.querySelectorAll('.ul-key').forEach(k => k.classList.remove('done'));
         showPage('admin');
-      },380);
+      }, 380);
     } else {
-      comboT=setTimeout(()=>{combo=[];document.querySelectorAll('.ul-key').forEach(k=>k.classList.remove('done'));document.getElementById('adm-unlock').classList.remove('visible');},4000);
+      comboT = setTimeout(() => {
+        combo = [];
+        document.querySelectorAll('.ul-key').forEach(k => k.classList.remove('done'));
+        document.getElementById('adm-unlock').classList.remove('visible');
+      }, 4000);
     }
   } else {
-    combo=[];document.querySelectorAll('.ul-key').forEach(k=>k.classList.remove('done'));document.getElementById('adm-unlock').classList.remove('visible');
+    combo = [];
+    document.querySelectorAll('.ul-key').forEach(k => k.classList.remove('done'));
+    document.getElementById('adm-unlock').classList.remove('visible');
   }
 });
 
@@ -652,5 +660,3 @@ renderHome();
 </script>
 </body>
 </html>
-HTMLEOF
-echo "OK - $(wc -c < /home/claude/index.html) bytes"
