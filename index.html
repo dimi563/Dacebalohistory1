@@ -1,0 +1,656 @@
+cat > /home/claude/index.html << 'HTMLEOF'
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dacebalohistory</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+:root{
+  --gold:#C9A84C;--gold-light:#E8D5A3;--gold-dim:#7A6530;
+  --bg:#0D0D0D;--surface:#141414;--card:#1C1C1C;--border:#2A2A2A;
+  --tp:#F0EDE4;--ts:#9A9488;--tm:#5A5650;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--tp);font-family:'Inter',sans-serif;min-height:100vh}
+
+/* NAV */
+.nav{background:rgba(13,13,13,.96);backdrop-filter:blur(12px);border-bottom:.5px solid var(--border);padding:0 2.5rem;display:flex;align-items:center;justify-content:space-between;height:62px;position:sticky;top:0;z-index:50}
+.nav-brand{font-family:'Playfair Display',serif;font-size:19px;color:var(--gold);letter-spacing:.04em;cursor:pointer;text-decoration:none;border:none;background:none}
+.nav-right{display:flex;gap:8px}
+.nav-btn{display:flex;align-items:center;gap:5px;background:transparent;border:.5px solid var(--border);color:var(--ts);padding:6px 14px;border-radius:20px;font-size:12px;font-family:'Inter',sans-serif;cursor:pointer;transition:border-color .2s,color .2s;letter-spacing:.03em}
+.nav-btn:hover{border-color:var(--gold-dim);color:var(--gold)}
+.nav-btn i{font-size:13px}
+
+.page{display:none}.page.active{display:block}
+
+/* HOME GRID */
+.cin-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:2px;padding:2px}
+.cin-card{position:relative;height:370px;overflow:hidden;cursor:pointer;background:var(--surface)}
+.cin-card img.cover{width:100%;height:100%;object-fit:cover;transition:transform .6s ease,filter .4s;filter:brightness(.55) saturate(.8)}
+.cin-card:hover img.cover{transform:scale(1.04);filter:brightness(.3) saturate(.6)}
+.cin-no-img{width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#111}
+.cin-no-img i{font-size:48px;color:var(--tm)}
+.cin-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.9) 0%,rgba(0,0,0,.15) 55%,transparent 100%);transition:background .4s}
+.cin-card:hover .cin-overlay{background:linear-gradient(to top,rgba(0,0,0,.97) 0%,rgba(0,0,0,.5) 65%,rgba(0,0,0,.1) 100%)}
+.cin-content{position:absolute;bottom:0;left:0;right:0;padding:1.75rem 1.5rem}
+.cin-era{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:.5rem}
+.cin-title{font-family:'Playfair Display',serif;font-size:21px;line-height:1.3;color:#fff;font-weight:600}
+.cin-excerpt{font-size:13px;color:rgba(240,237,228,.65);margin-top:.5rem;line-height:1.6;font-weight:300;max-height:0;overflow:hidden;transition:max-height .4s,opacity .4s;opacity:0}
+.cin-card:hover .cin-excerpt{max-height:72px;opacity:1}
+.cin-date{font-size:11px;color:var(--tm);margin-top:.75rem;display:flex;align-items:center;gap:4px}
+.empty-home{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8rem 2rem;text-align:center;gap:1rem}
+.empty-home i{font-size:44px;color:var(--tm)}
+.empty-home p{color:var(--tm);font-size:14px;line-height:1.8}
+.empty-home kbd{color:var(--gold);font-family:'Playfair Display',serif;font-style:italic;font-size:15px}
+
+/* ARTICLE */
+.art-hero{position:relative;height:440px;overflow:hidden}
+.art-hero img{width:100%;height:100%;object-fit:cover;filter:brightness(.45)}
+.art-hero-none{height:160px;background:var(--surface);border-bottom:.5px solid var(--border)}
+.art-hero-overlay{position:absolute;inset:0;background:linear-gradient(to top,var(--bg) 0%,transparent 60%)}
+.art-hero-content{position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:780px;padding:0 2rem 2.5rem}
+.art-hero-era{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:.6rem}
+.art-hero-title{font-family:'Playfair Display',serif;font-size:44px;line-height:1.15;color:#fff;font-weight:700}
+.art-hero-date{font-size:12px;color:rgba(255,255,255,.35);margin-top:.7rem}
+.art-body-wrap{max-width:780px;margin:0 auto;padding:2.5rem 2rem 5rem}
+.back-btn{display:inline-flex;align-items:center;gap:6px;color:var(--tm);font-size:12px;cursor:pointer;background:none;border:none;font-family:'Inter',sans-serif;margin-bottom:2rem;transition:color .2s;letter-spacing:.05em;text-transform:uppercase}
+.back-btn:hover{color:var(--gold)}
+.art-body{font-family:'Cormorant Garamond',serif;font-size:20px;line-height:1.9;color:rgba(240,237,228,.82);font-weight:300}
+.art-body h1,.art-body h2,.art-body h3{font-family:'Playfair Display',serif;color:var(--tp);font-weight:600;margin:2rem 0 .75rem;line-height:1.25}
+.art-body h1{font-size:34px}.art-body h2{font-size:27px}.art-body h3{font-size:22px}
+.art-body p{margin-bottom:1.3rem}
+.art-body strong{color:var(--gold-light);font-weight:600}
+.art-body em{font-style:italic;color:rgba(240,237,228,.65)}
+.art-body ul,.art-body ol{padding-left:1.6rem;margin-bottom:1.3rem}
+.art-body li{margin-bottom:.4rem}
+.art-body blockquote{border-left:2px solid var(--gold);padding:.75rem 1.5rem;margin:1.5rem 0;color:var(--ts);font-style:italic}
+.art-body hr{border:none;border-top:.5px solid var(--border);margin:2.5rem 0}
+.art-body .art-img-wrap{margin:1.5rem 0;display:inline-block;width:100%}
+.art-body .art-img-wrap img{display:block;border:.5px solid var(--border);cursor:zoom-in;transition:opacity .2s}
+.art-body .art-img-wrap img:hover{opacity:.9}
+.art-body .video-embed{margin:1.5rem 0}
+.art-body .video-embed iframe{width:100%;aspect-ratio:16/9;border:.5px solid var(--border);background:#000}
+.art-body video{width:100%;margin:1.5rem 0;border:.5px solid var(--border);background:#000;display:block}
+
+/* IMAGE LIGHTBOX */
+.lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:500;align-items:center;justify-content:center;flex-direction:column;gap:1rem}
+.lightbox.open{display:flex}
+.lightbox-img-wrap{position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;max-width:90vw;max-height:80vh}
+.lightbox-img-wrap img{max-width:90vw;max-height:80vh;object-fit:contain;transition:transform .25s ease;transform-origin:center center;cursor:grab}
+.lightbox-img-wrap img.grabbing{cursor:grabbing}
+.lightbox-controls{display:flex;align-items:center;gap:12px}
+.lb-btn{background:rgba(255,255,255,.07);border:.5px solid rgba(255,255,255,.15);color:rgba(255,255,255,.7);width:38px;height:38px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;border-radius:2px;transition:background .2s,color .2s}
+.lb-btn:hover{background:rgba(201,168,76,.2);color:var(--gold)}
+.lb-close{position:fixed;top:1.25rem;right:1.5rem;background:rgba(255,255,255,.07);border:.5px solid rgba(255,255,255,.15);color:rgba(255,255,255,.7);width:38px;height:38px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;border-radius:2px;transition:background .2s}
+.lb-close:hover{background:rgba(201,168,76,.2);color:var(--gold)}
+.lb-zoom-label{font-size:12px;color:var(--tm);min-width:48px;text-align:center;letter-spacing:.05em}
+
+/* SEARCH */
+.search-page{max-width:680px;margin:0 auto;padding:3rem 2rem}
+.search-wrap{position:relative;margin-bottom:2.5rem}
+.search-wrap i{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--tm);font-size:16px;pointer-events:none}
+.search-box{width:100%;background:var(--surface);border:.5px solid var(--border);color:var(--tp);padding:12px 14px 12px 42px;font-size:15px;font-family:'Inter',sans-serif;outline:none;transition:border-color .2s}
+.search-box:focus{border-color:var(--gold-dim)}
+.search-box::placeholder{color:var(--tm)}
+.res-item{padding:1.1rem 0;border-bottom:.5px solid var(--border);cursor:pointer;display:flex;align-items:baseline;justify-content:space-between;gap:1rem;transition:opacity .2s}
+.res-item:hover{opacity:.65}
+.res-item:first-of-type{border-top:.5px solid var(--border)}
+.res-title{font-family:'Playfair Display',serif;font-size:16px;color:var(--tp)}
+.res-era{font-size:11px;color:var(--tm);white-space:nowrap}
+
+/* ADMIN */
+.adm-wrap{max-width:860px;margin:0 auto;padding:3rem 2rem 6rem}
+.adm-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:2.5rem;gap:1rem;flex-wrap:wrap}
+.adm-heading{font-family:'Playfair Display',serif;font-size:26px;color:var(--gold)}
+.adm-sub{font-size:13px;color:var(--tm);margin-top:5px}
+.form-group{margin-bottom:1.25rem}
+.form-label{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--tm);display:block;margin-bottom:7px}
+.form-input{width:100%;background:var(--surface);border:.5px solid var(--border);color:var(--tp);padding:10px 14px;font-size:14px;font-family:'Inter',sans-serif;outline:none;transition:border-color .2s}
+.form-input:focus{border-color:var(--gold-dim)}
+.form-input::placeholder{color:var(--tm)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+
+/* upload zone */
+.upload-zone{border:.5px dashed var(--border);padding:1.5rem;text-align:center;cursor:pointer;transition:border-color .2s,background .2s;position:relative;overflow:hidden}
+.upload-zone:hover{border-color:var(--gold-dim);background:rgba(201,168,76,.03)}
+.upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.upload-zone-label{display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none}
+.upload-zone-label i{font-size:28px;color:var(--gold-dim)}
+.upload-zone-label span{font-size:13px;color:var(--ts)}
+.upload-zone-label small{font-size:11px;color:var(--tm)}
+.cover-preview{width:100%;max-height:220px;object-fit:cover;margin-top:1rem;display:none;border:.5px solid var(--border)}
+.upload-meta{display:flex;align-items:center;gap:8px;margin-top:8px}
+.upload-meta span{font-size:12px;color:var(--tm);flex:1}
+
+/* rich editor */
+.editor-shell{border:.5px solid var(--border);background:var(--surface);transition:border-color .2s}
+.editor-shell:focus-within{border-color:var(--gold-dim)}
+.editor-toolbar{display:flex;flex-wrap:wrap;gap:2px;padding:8px;border-bottom:.5px solid var(--border);background:var(--card)}
+.tb-btn{background:none;border:none;color:var(--tm);padding:5px 8px;cursor:pointer;font-size:13px;font-family:'Inter',sans-serif;border-radius:2px;transition:background .15s,color .15s;display:flex;align-items:center;gap:4px;line-height:1}
+.tb-btn:hover{background:var(--border);color:var(--tp)}
+.tb-btn i{font-size:15px}
+.tb-sep{width:.5px;background:var(--border);margin:4px 2px;align-self:stretch}
+.editor-area{min-height:280px;padding:1.25rem;outline:none;font-family:'Cormorant Garamond',serif;font-size:19px;line-height:1.85;color:var(--tp);caret-color:var(--gold)}
+.editor-area:empty:before{content:attr(data-placeholder);color:var(--tm);pointer-events:none}
+.editor-area h1,.editor-area h2,.editor-area h3{font-family:'Playfair Display',serif;color:var(--tp);margin:.75rem 0 .4rem}
+.editor-area h1{font-size:30px}.editor-area h2{font-size:24px}.editor-area h3{font-size:20px}
+.editor-area blockquote{border-left:2px solid var(--gold);padding:.5rem 1rem;color:var(--ts);font-style:italic;margin:.75rem 0}
+.editor-area img{max-width:100%;margin:.5rem 0;border:.5px solid var(--border);display:block;cursor:pointer}
+.editor-area strong{color:var(--gold-light)}
+.editor-area .vid-placeholder{margin:.75rem 0;background:var(--card);border:.5px solid var(--border);padding:.75rem 1rem;font-size:13px;font-family:'Inter',sans-serif;color:var(--ts);display:flex;align-items:center;gap:.5rem}
+.editor-area video{max-width:100%;margin:.5rem 0;border:.5px solid var(--border)}
+.editor-area hr{border:none;border-top:.5px solid var(--border);margin:1.5rem 0}
+
+/* img resize toolbar (appears when img clicked in editor) */
+.img-resize-bar{display:none;position:fixed;background:var(--card);border:.5px solid var(--border);padding:4px 6px;gap:4px;z-index:400;align-items:center}
+.img-resize-bar.visible{display:flex}
+.irb-btn{background:none;border:.5px solid var(--border);color:var(--ts);padding:3px 8px;font-size:12px;cursor:pointer;font-family:'Inter',sans-serif;transition:color .2s,border-color .2s}
+.irb-btn:hover{color:var(--gold);border-color:var(--gold-dim)}
+
+/* modal */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:200;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal-box{background:var(--card);border:.5px solid var(--border);padding:2rem;width:100%;max-width:500px;position:relative}
+.modal-title{font-family:'Playfair Display',serif;font-size:18px;color:var(--gold);margin-bottom:1.25rem}
+.modal-close{position:absolute;top:1rem;right:1rem;background:none;border:none;color:var(--tm);font-size:18px;cursor:pointer;padding:4px}
+.modal-close:hover{color:var(--tp)}
+.modal-tabs{display:flex;margin-bottom:1.25rem;border:.5px solid var(--border)}
+.modal-tab{flex:1;padding:8px;font-size:12px;font-family:'Inter',sans-serif;background:none;border:none;color:var(--tm);cursor:pointer;transition:background .2s,color .2s;letter-spacing:.03em}
+.modal-tab.active{background:var(--surface);color:var(--gold)}
+.modal-tab-content{display:none}.modal-tab-content.active{display:block}
+.modal-note{font-size:12px;color:var(--tm);margin-bottom:1rem;line-height:1.6}
+
+/* buttons */
+.btn-gold{background:var(--gold);color:#0D0D0D;border:none;padding:10px 22px;font-size:13px;font-weight:500;font-family:'Inter',sans-serif;cursor:pointer;letter-spacing:.05em;transition:opacity .2s;display:inline-flex;align-items:center;gap:6px}
+.btn-gold:hover{opacity:.85}
+.btn-ghost{background:transparent;color:var(--tm);border:.5px solid var(--border);padding:10px 18px;font-size:13px;font-family:'Inter',sans-serif;cursor:pointer;transition:color .2s,border-color .2s;display:inline-flex;align-items:center;gap:6px}
+.btn-ghost:hover{color:var(--gold);border-color:var(--gold-dim)}
+.form-actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:1.5rem}
+.divider{height:.5px;background:var(--border);margin:2.5rem 0}
+.list-label{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:1.5rem}
+.adm-row{display:flex;align-items:center;gap:1rem;padding:1rem 0;border-bottom:.5px solid var(--border)}
+.adm-row:first-of-type{border-top:.5px solid var(--border)}
+.adm-thumb{width:72px;height:52px;flex-shrink:0;background:var(--card);border:.5px solid var(--border);overflow:hidden;display:flex;align-items:center;justify-content:center}
+.adm-thumb img{width:100%;height:100%;object-fit:cover}
+.adm-thumb i{font-size:18px;color:var(--tm)}
+.adm-info{flex:1;min-width:0}
+.adm-info-title{font-family:'Playfair Display',serif;font-size:15px;color:var(--tp);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.adm-info-meta{font-size:11px;color:var(--tm);margin-top:3px}
+.adm-actions{display:flex;gap:6px;flex-shrink:0}
+.btn-icon{background:none;border:.5px solid var(--border);color:var(--tm);width:32px;height:32px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:color .2s,border-color .2s}
+.btn-icon:hover{color:var(--gold);border-color:var(--gold-dim)}
+.btn-icon.del:hover{color:#E24B4A;border-color:#A32D2D}
+
+/* unlock overlay */
+#adm-unlock{display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:100;align-items:center;justify-content:center;flex-direction:column;gap:16px}
+#adm-unlock.visible{display:flex}
+.ul-title{font-family:'Playfair Display',serif;font-size:13px;color:var(--tm);letter-spacing:.12em;text-transform:uppercase}
+.ul-keys{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;max-width:320px}
+.ul-key{font-size:14px;color:var(--tm);width:34px;height:34px;border:.5px solid var(--border);display:flex;align-items:center;justify-content:center;transition:color .2s,border-color .2s,background .2s}
+.ul-key.done{color:var(--gold);border-color:var(--gold-dim);background:rgba(201,168,76,.08)}
+
+/* toast */
+.toast{position:fixed;bottom:2rem;right:2rem;background:var(--card);border:.5px solid var(--gold-dim);color:var(--gold-light);padding:11px 20px;font-size:13px;opacity:0;transform:translateY(6px);transition:opacity .3s,transform .3s;pointer-events:none;z-index:300}
+.toast.show{opacity:1;transform:translateY(0)}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <button class="nav-brand" onclick="showPage('home')">Dacebalohistory</button>
+  <div class="nav-right">
+    <button class="nav-btn" onclick="showPage('home')"><i class="ti ti-home"></i> Acasă</button>
+    <button class="nav-btn" onclick="showPage('search')"><i class="ti ti-search"></i> Caută</button>
+  </div>
+</nav>
+
+<!-- HOME -->
+<div id="page-home" class="page active"><div id="home-grid"></div></div>
+
+<!-- ARTICLE -->
+<div id="page-article" class="page">
+  <div id="art-hero-zone"></div>
+  <div class="art-body-wrap">
+    <button class="back-btn" onclick="showPage('home')"><i class="ti ti-arrow-left"></i> Înapoi</button>
+    <div id="art-body" class="art-body"></div>
+  </div>
+</div>
+
+<!-- SEARCH -->
+<div id="page-search" class="page">
+  <div class="search-page">
+    <div class="search-wrap">
+      <i class="ti ti-search"></i>
+      <input class="search-box" id="search-input" type="text" placeholder="Caută articole..." oninput="doSearch()">
+    </div>
+    <div id="search-results"></div>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div id="page-admin" class="page">
+  <div class="adm-wrap">
+    <div class="adm-top">
+      <div>
+        <div class="adm-heading">Panou de administrare</div>
+        <div class="adm-sub" id="adm-mode">Articol nou</div>
+      </div>
+      <button class="btn-ghost" onclick="showPage('home')"><i class="ti ti-x"></i> Ieși</button>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Titlu articol</label>
+        <input class="form-input" id="f-title" type="text" placeholder="ex: Căderea Romei...">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Epocă · Categorie</label>
+        <input class="form-input" id="f-era" type="text" placeholder="ex: Roma · Antichitate">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Imagine de copertă</label>
+      <div class="upload-zone">
+        <input type="file" accept="image/*" id="cover-input" onchange="handleCover(event)">
+        <div class="upload-zone-label">
+          <i class="ti ti-photo-up"></i>
+          <span>Apasă sau trage o imagine</span>
+          <small>JPG, PNG, WEBP — max 5MB</small>
+        </div>
+        <img id="cover-preview" class="cover-preview">
+      </div>
+      <div class="upload-meta">
+        <span id="cover-name"></span>
+        <button class="btn-ghost" id="cover-remove" onclick="removeCover()" style="display:none;padding:5px 12px;font-size:12px"><i class="ti ti-x"></i> Elimină</button>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Conținut articol</label>
+      <div class="editor-shell">
+        <div class="editor-toolbar">
+          <button class="tb-btn" onclick="fmt('bold')" title="Bold"><i class="ti ti-bold"></i></button>
+          <button class="tb-btn" onclick="fmt('italic')" title="Italic"><i class="ti ti-italic"></i></button>
+          <button class="tb-btn" onclick="fmt('underline')" title="Subliniat"><i class="ti ti-underline"></i></button>
+          <div class="tb-sep"></div>
+          <button class="tb-btn" onclick="fmtBlock('h2')" title="Titlu mare">H1</button>
+          <button class="tb-btn" onclick="fmtBlock('h3')" title="Titlu mic">H2</button>
+          <button class="tb-btn" onclick="fmtBlock('p')" title="Paragraf"><i class="ti ti-pilcrow"></i></button>
+          <div class="tb-sep"></div>
+          <button class="tb-btn" onclick="fmt('insertUnorderedList')"><i class="ti ti-list"></i></button>
+          <button class="tb-btn" onclick="fmt('insertOrderedList')"><i class="ti ti-list-numbers"></i></button>
+          <button class="tb-btn" onclick="fmtBlock('blockquote')"><i class="ti ti-quote"></i></button>
+          <button class="tb-btn" onclick="insertHr()"><i class="ti ti-minus"></i></button>
+          <div class="tb-sep"></div>
+          <button class="tb-btn" onclick="triggerInlineImg()" title="Inserează imagine"><i class="ti ti-photo"></i></button>
+          <button class="tb-btn" onclick="openVideoModal()" title="Inserează video"><i class="ti ti-video"></i></button>
+          <div class="tb-sep"></div>
+          <button class="tb-btn" onclick="fmt('removeFormat')"><i class="ti ti-clear-formatting"></i></button>
+        </div>
+        <div class="editor-area" id="editor" contenteditable="true" data-placeholder="Scrie conținutul articolului aici..."></div>
+      </div>
+      <input type="file" id="inline-img-input" accept="image/*" style="display:none" onchange="insertInlineImg(event)">
+      <input type="file" id="inline-vid-input" accept="video/*" style="display:none" onchange="insertUploadVid(event)">
+    </div>
+
+    <div class="form-actions">
+      <button class="btn-gold" onclick="saveArticle()"><i class="ti ti-check"></i> Salvează articolul</button>
+      <button class="btn-ghost" id="cancel-btn" onclick="cancelEdit()" style="display:none"><i class="ti ti-x"></i> Anulează</button>
+    </div>
+
+    <div class="divider"></div>
+    <div class="list-label">Articole existente</div>
+    <div id="adm-list"></div>
+  </div>
+</div>
+
+<!-- IMAGE RESIZE BAR (in editor) -->
+<div class="img-resize-bar" id="img-resize-bar">
+  <span style="font-size:11px;color:var(--tm);margin-right:4px">Dimensiune:</span>
+  <button class="irb-btn" onclick="resizeSelectedImg(25)">25%</button>
+  <button class="irb-btn" onclick="resizeSelectedImg(50)">50%</button>
+  <button class="irb-btn" onclick="resizeSelectedImg(75)">75%</button>
+  <button class="irb-btn" onclick="resizeSelectedImg(100)">100%</button>
+  <button class="irb-btn" onclick="resizeSelectedImg('auto')">Auto</button>
+  <button class="irb-btn" onclick="hideResizeBar()" style="margin-left:4px;color:var(--tm)"><i class="ti ti-x" style="font-size:12px"></i></button>
+</div>
+
+<!-- VIDEO MODAL -->
+<div class="modal-overlay" id="video-modal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeVideoModal()"><i class="ti ti-x"></i></button>
+    <div class="modal-title">Inserează video</div>
+    <div class="modal-tabs">
+      <button class="modal-tab active" onclick="switchTab('yt')"><i class="ti ti-brand-youtube"></i> Link online</button>
+      <button class="modal-tab" onclick="switchTab('upload')"><i class="ti ti-upload"></i> De pe dispozitiv</button>
+    </div>
+    <div id="tab-yt" class="modal-tab-content active">
+      <p class="modal-note">Funcționează cu YouTube și Vimeo. Lipește URL-ul complet al videoclipului.</p>
+      <div class="form-group">
+        <label class="form-label">URL video</label>
+        <input class="form-input" id="video-url-input" type="text" placeholder="https://www.youtube.com/watch?v=...">
+      </div>
+      <button class="btn-gold" onclick="insertLinkVideo()"><i class="ti ti-check"></i> Inserează</button>
+    </div>
+    <div id="tab-upload" class="modal-tab-content">
+      <p class="modal-note">Selectează un fișier video (MP4, WEBM). Va fi stocat local în browser împreună cu articolul.</p>
+      <button class="btn-ghost" onclick="document.getElementById('inline-vid-input').click()"><i class="ti ti-upload"></i> Alege fișier video</button>
+      <p style="font-size:11px;color:var(--tm);margin-top:.75rem">Atenție: fișierele mari pot depăși limita localStorage a browserului.</p>
+    </div>
+  </div>
+</div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="lbClickOutside(event)">
+  <button class="lb-close" onclick="closeLightbox()"><i class="ti ti-x"></i></button>
+  <div class="lightbox-img-wrap" id="lb-img-wrap">
+    <img id="lb-img" src="" alt="">
+  </div>
+  <div class="lightbox-controls">
+    <button class="lb-btn" onclick="lbZoom(-0.25)" title="Micșorează"><i class="ti ti-zoom-out"></i></button>
+    <span class="lb-zoom-label" id="lb-zoom-label">100%</span>
+    <button class="lb-btn" onclick="lbZoom(0.25)" title="Mărește"><i class="ti ti-zoom-in"></i></button>
+    <button class="lb-btn" onclick="lbReset()" title="Reset"><i class="ti ti-refresh"></i></button>
+  </div>
+</div>
+
+<!-- UNLOCK OVERLAY -->
+<div id="adm-unlock">
+  <div class="ul-title">Combinație secretă</div>
+  <div class="ul-keys" id="ul-keys">
+    <div class="ul-key">↑</div><div class="ul-key">↑</div>
+    <div class="ul-key">↓</div><div class="ul-key">↓</div>
+    <div class="ul-key">←</div><div class="ul-key">←</div>
+    <div class="ul-key">→</div><div class="ul-key">→</div>
+    <div class="ul-key">↑</div><div class="ul-key">↓</div>
+    <div class="ul-key">←</div><div class="ul-key">→</div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── SECRET COMBO: ↑↑↓↓←←→→↑↓←→ ─────────────────────────────
+const SECRET=['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowLeft','ArrowRight','ArrowRight','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'];
+
+// ── Storage ──────────────────────────────────────────────────
+function getArts(){try{return JSON.parse(localStorage.getItem('daceb_v3')||'[]')}catch{return[]}}
+function setArts(a){localStorage.setItem('daceb_v3',JSON.stringify(a))}
+
+// ── Pages ────────────────────────────────────────────────────
+function showPage(n){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+n).classList.add('active');
+  if(n==='home')renderHome();
+  if(n==='admin')renderAdmin();
+  if(n==='search'){document.getElementById('search-input').value='';document.getElementById('search-results').innerHTML=''}
+  window.scrollTo(0,0);
+}
+
+// ── Home ─────────────────────────────────────────────────────
+function renderHome(){
+  const arts=getArts(), g=document.getElementById('home-grid');
+  if(!arts.length){
+    g.innerHTML=`<div class="empty-home"><i class="ti ti-building-castle"></i><p>Niciun articol încă.<br>Apasă combinația secretă pentru panoul de admin.</p></div>`;
+    return;
+  }
+  g.innerHTML=`<div class="cin-grid">${arts.map((a,i)=>{
+    const cover=a.coverBase64?`<img class="cover" src="${a.coverBase64}" alt="${esc(a.title)}">`:`<div class="cin-no-img"><i class="ti ti-building-monument"></i></div>`;
+    const ex=a.bodyHtml?strip(a.bodyHtml).slice(0,110)+(strip(a.bodyHtml).length>110?'…':''):'';
+    return `<div class="cin-card" onclick="openArt(${i})">${cover}<div class="cin-overlay"></div><div class="cin-content"><div class="cin-era">${esc(a.era||'')}</div><div class="cin-title">${esc(a.title)}</div>${ex?`<div class="cin-excerpt">${esc(ex)}</div>`:''}<div class="cin-date"><i class="ti ti-calendar" style="font-size:11px"></i>${a.date||''}</div></div></div>`;
+  }).join('')}</div>`;
+}
+
+// ── Article ──────────────────────────────────────────────────
+function openArt(i){
+  const a=getArts()[i]; if(!a)return;
+  document.getElementById('art-hero-zone').innerHTML=a.coverBase64
+    ?`<div class="art-hero"><img src="${a.coverBase64}" alt="${esc(a.title)}"><div class="art-hero-overlay"></div><div class="art-hero-content"><div class="art-hero-era">${esc(a.era||'')}</div><h1 class="art-hero-title">${esc(a.title)}</h1><div class="art-hero-date">${a.date||''}</div></div></div>`
+    :`<div class="art-hero-none"></div>`;
+  document.getElementById('art-body').innerHTML=renderBody(a.bodyHtml||'');
+  // attach lightbox to images in article
+  document.querySelectorAll('#art-body img').forEach(img=>{
+    img.style.cursor='zoom-in';
+    img.addEventListener('click',()=>openLightbox(img.src));
+  });
+  showPage('article');
+}
+
+function renderBody(html){
+  html=html.replace(/\[youtube:([^\]]+)\]/g,(_,id)=>`<div class="video-embed"><iframe src="https://www.youtube.com/embed/${id}" frameborder="0" allowfullscreen loading="lazy"></iframe></div>`);
+  html=html.replace(/\[vimeo:([^\]]+)\]/g,(_,id)=>`<div class="video-embed"><iframe src="https://player.vimeo.com/video/${id}" frameborder="0" allowfullscreen loading="lazy"></iframe></div>`);
+  // strip editor placeholder divs
+  html=html.replace(/<div class="vid-placeholder"[^>]*>.*?<\/div>/gs,'');
+  return html;
+}
+
+// ── Search ───────────────────────────────────────────────────
+function doSearch(){
+  const q=document.getElementById('search-input').value.toLowerCase().trim();
+  const r=document.getElementById('search-results');
+  if(!q){r.innerHTML='';return}
+  const arts=getArts();
+  const f=arts.map((a,i)=>({a,i})).filter(({a})=>
+    a.title.toLowerCase().includes(q)||(a.era||'').toLowerCase().includes(q)||strip(a.bodyHtml||'').toLowerCase().includes(q));
+  r.innerHTML=f.length
+    ?f.map(({a,i})=>`<div class="res-item" onclick="openArt(${i})"><div class="res-title">${esc(a.title)}</div><div class="res-era">${esc(a.era||'')}</div></div>`).join('')
+    :`<div style="color:var(--tm);font-size:14px;padding:2rem 0">Niciun rezultat găsit.</div>`;
+}
+
+// ── Admin ────────────────────────────────────────────────────
+let editIdx=-1, coverB64=null;
+
+function renderAdmin(){
+  const arts=getArts(), l=document.getElementById('adm-list');
+  if(!arts.length){l.innerHTML='<div style="color:var(--tm);font-size:14px;padding:2rem 0">Niciun articol încă.</div>';return}
+  l.innerHTML=arts.map((a,i)=>`
+    <div class="adm-row">
+      <div class="adm-thumb">${a.coverBase64?`<img src="${a.coverBase64}">`:`<i class="ti ti-photo-off"></i>`}</div>
+      <div class="adm-info"><div class="adm-info-title">${esc(a.title)}</div><div class="adm-info-meta">${esc(a.era||'')} · ${a.date||'fără dată'}</div></div>
+      <div class="adm-actions">
+        <button class="btn-icon" onclick="editArt(${i})"><i class="ti ti-edit"></i></button>
+        <button class="btn-icon del" onclick="delArt(${i})"><i class="ti ti-trash"></i></button>
+      </div>
+    </div>`).join('');
+}
+
+function saveArticle(){
+  const title=document.getElementById('f-title').value.trim();
+  const era=document.getElementById('f-era').value.trim();
+  const bodyHtml=document.getElementById('editor').innerHTML.trim();
+  if(!title){toast('Adaugă un titlu!');return}
+  const arts=getArts();
+  const now=new Date().toLocaleDateString('ro-RO',{day:'numeric',month:'long',year:'numeric'});
+  if(editIdx>=0){arts[editIdx]={...arts[editIdx],title,era,bodyHtml,coverBase64:coverB64};toast('Articol actualizat!')}
+  else{arts.unshift({title,era,bodyHtml,coverBase64:coverB64,date:now});toast('Articol adăugat!')}
+  setArts(arts);clearForm();renderAdmin();
+}
+
+function editArt(i){
+  const a=getArts()[i];
+  document.getElementById('f-title').value=a.title;
+  document.getElementById('f-era').value=a.era||'';
+  document.getElementById('editor').innerHTML=a.bodyHtml||'';
+  coverB64=a.coverBase64||null;
+  if(coverB64){document.getElementById('cover-preview').src=coverB64;document.getElementById('cover-preview').style.display='block';document.getElementById('cover-name').textContent='Imagine existentă';document.getElementById('cover-remove').style.display='inline-flex'}
+  editIdx=i;document.getElementById('cancel-btn').style.display='inline-flex';
+  document.getElementById('adm-mode').textContent='Editare articol';window.scrollTo(0,0);
+}
+function cancelEdit(){clearForm()}
+function clearForm(){
+  document.getElementById('f-title').value='';document.getElementById('f-era').value='';
+  document.getElementById('editor').innerHTML='';removeCover();
+  editIdx=-1;document.getElementById('cancel-btn').style.display='none';
+  document.getElementById('adm-mode').textContent='Articol nou';
+}
+function delArt(i){
+  if(!confirm('Ștergi definitiv?'))return;
+  const arts=getArts();arts.splice(i,1);setArts(arts);toast('Articol șters.');renderAdmin();
+}
+
+// ── Cover ────────────────────────────────────────────────────
+function handleCover(e){
+  const f=e.target.files[0];if(!f)return;
+  if(f.size>5*1024*1024){toast('Max 5MB!');return}
+  const r=new FileReader();
+  r.onload=ev=>{coverB64=ev.target.result;document.getElementById('cover-preview').src=coverB64;document.getElementById('cover-preview').style.display='block';document.getElementById('cover-name').textContent=f.name;document.getElementById('cover-remove').style.display='inline-flex'};
+  r.readAsDataURL(f);
+}
+function removeCover(){
+  coverB64=null;['cover-preview','cover-name','cover-remove'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el.tagName==='IMG'){el.style.display='none';el.src=''}
+    else if(el.tagName==='SPAN'||el.style){el.textContent='';el.style.display='none'}
+  });
+  document.getElementById('cover-input').value='';
+  document.getElementById('cover-name').textContent='';
+}
+
+// ── Editor ───────────────────────────────────────────────────
+function fmt(cmd){document.getElementById('editor').focus();document.execCommand(cmd,false,null)}
+function fmtBlock(tag){document.getElementById('editor').focus();document.execCommand('formatBlock',false,tag)}
+function insertHr(){document.getElementById('editor').focus();document.execCommand('insertHTML',false,'<hr>')}
+
+// inline image
+function triggerInlineImg(){document.getElementById('inline-img-input').click()}
+function insertInlineImg(e){
+  const f=e.target.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=ev=>{
+    document.getElementById('editor').focus();
+    document.execCommand('insertHTML',false,`<img src="${ev.target.result}" style="max-width:100%;margin:.5rem 0;display:block;border:.5px solid var(--border)">`);
+  };
+  r.readAsDataURL(f);e.target.value='';
+}
+
+// Image resize bar in editor
+let selectedImg=null;
+document.addEventListener('click',e=>{
+  const bar=document.getElementById('img-resize-bar');
+  if(e.target.tagName==='IMG'&&document.getElementById('editor').contains(e.target)){
+    selectedImg=e.target;
+    bar.style.top=(e.clientY-48)+'px';bar.style.left=e.clientX+'px';
+    bar.classList.add('visible');
+  } else if(!bar.contains(e.target)){
+    hideResizeBar();
+  }
+});
+function resizeSelectedImg(pct){
+  if(!selectedImg)return;
+  if(pct==='auto'){selectedImg.style.width='';selectedImg.style.maxWidth='100%'}
+  else{selectedImg.style.width=pct+'%';selectedImg.style.maxWidth=pct+'%'}
+}
+function hideResizeBar(){document.getElementById('img-resize-bar').classList.remove('visible');selectedImg=null}
+
+// ── Video modal ───────────────────────────────────────────────
+function openVideoModal(){document.getElementById('video-modal').classList.add('open')}
+function closeVideoModal(){document.getElementById('video-modal').classList.remove('open');document.getElementById('video-url-input').value=''}
+function switchTab(t){
+  document.querySelectorAll('.modal-tab').forEach((b,i)=>b.classList.toggle('active',(t==='yt'&&i===0)||(t==='upload'&&i===1)));
+  document.getElementById('tab-yt').classList.toggle('active',t==='yt');
+  document.getElementById('tab-upload').classList.toggle('active',t==='upload');
+}
+
+function getYTId(url){
+  try{const u=new URL(url);if(u.hostname.includes('youtu.be'))return u.pathname.slice(1).split('?')[0];return u.searchParams.get('v')}catch{return null}
+}
+function getVimeoId(url){const m=url.match(/vimeo\.com\/(\d+)/);return m?m[1]:null}
+
+function insertLinkVideo(){
+  const url=document.getElementById('video-url-input').value.trim();
+  if(!url){toast('Introdu un URL!');return}
+  const ytId=getYTId(url), viId=getVimeoId(url);
+  let marker='';
+  if(ytId)marker=`[youtube:${ytId}]`;
+  else if(viId)marker=`[vimeo:${viId}]`;
+  else{toast('URL invalid. Încearcă YouTube sau Vimeo.');return}
+  document.getElementById('editor').focus();
+  document.execCommand('insertHTML',false,
+    `<div class="vid-placeholder" contenteditable="false"><i class="ti ti-video" style="color:var(--gold)"></i>&nbsp;Video adăugat (se afișează la publicare)</div><p>${marker}</p><p></p>`);
+  closeVideoModal();toast('Video adăugat!');
+}
+
+function insertUploadVid(e){
+  const f=e.target.files[0];if(!f)return;
+  closeVideoModal();
+  const r=new FileReader();
+  r.onload=ev=>{
+    document.getElementById('editor').focus();
+    document.execCommand('insertHTML',false,`<video controls style="max-width:100%;margin:.5rem 0;display:block;border:.5px solid var(--border)"><source src="${ev.target.result}" type="${f.type}"></video>`);
+    toast('Video adăugat!');
+  };
+  r.readAsDataURL(f);e.target.value='';
+}
+
+// close modal on overlay click
+document.getElementById('video-modal').addEventListener('click',e=>{if(e.target===document.getElementById('video-modal'))closeVideoModal()});
+
+// ── Lightbox ─────────────────────────────────────────────────
+let lbScale=1;
+function openLightbox(src){
+  lbScale=1;
+  const img=document.getElementById('lb-img');
+  img.src=src;img.style.transform='scale(1)';
+  document.getElementById('lb-zoom-label').textContent='100%';
+  document.getElementById('lightbox').classList.add('open');
+}
+function closeLightbox(){document.getElementById('lightbox').classList.remove('open')}
+function lbClickOutside(e){if(e.target===document.getElementById('lightbox'))closeLightbox()}
+function lbZoom(delta){
+  lbScale=Math.max(0.25,Math.min(4,lbScale+delta));
+  document.getElementById('lb-img').style.transform=`scale(${lbScale})`;
+  document.getElementById('lb-zoom-label').textContent=Math.round(lbScale*100)+'%';
+}
+function lbReset(){lbScale=1;document.getElementById('lb-img').style.transform='scale(1)';document.getElementById('lb-zoom-label').textContent='100%'}
+// mouse wheel zoom in lightbox
+document.getElementById('lightbox').addEventListener('wheel',e=>{
+  if(!document.getElementById('lightbox').classList.contains('open'))return;
+  e.preventDefault();lbZoom(e.deltaY<0?0.15:-0.15);
+},{passive:false});
+// keyboard esc
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeLightbox()});
+
+// ── Secret combo ─────────────────────────────────────────────
+let combo=[],comboT=null;
+document.addEventListener('keydown',e=>{
+  if(!SECRET.includes(e.key)){
+    if(document.activeElement.tagName==='INPUT'||document.activeElement.contentEditable==='true')return;
+    combo=[];document.getElementById('adm-unlock').classList.remove('visible');return;
+  }
+  if(document.activeElement.tagName==='INPUT'||document.activeElement.contentEditable==='true')return;
+  e.preventDefault();
+  if(combo.length===0)document.getElementById('adm-unlock').classList.add('visible');
+  if(e.key===SECRET[combo.length]){
+    combo.push(e.key);
+    document.querySelectorAll('.ul-key').forEach((k,i)=>k.classList.toggle('done',i<combo.length));
+    clearTimeout(comboT);
+    if(combo.length===SECRET.length){
+      setTimeout(()=>{
+        document.getElementById('adm-unlock').classList.remove('visible');
+        combo=[];document.querySelectorAll('.ul-key').forEach(k=>k.classList.remove('done'));
+        showPage('admin');
+      },380);
+    } else {
+      comboT=setTimeout(()=>{combo=[];document.querySelectorAll('.ul-key').forEach(k=>k.classList.remove('done'));document.getElementById('adm-unlock').classList.remove('visible');},4000);
+    }
+  } else {
+    combo=[];document.querySelectorAll('.ul-key').forEach(k=>k.classList.remove('done'));document.getElementById('adm-unlock').classList.remove('visible');
+  }
+});
+
+// ── Helpers ───────────────────────────────────────────────────
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2600)}
+function esc(s){if(!s)return'';return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function strip(s){const d=document.createElement('div');d.innerHTML=s;return d.textContent||''}
+
+renderHome();
+</script>
+</body>
+</html>
+HTMLEOF
+echo "OK - $(wc -c < /home/claude/index.html) bytes"
